@@ -1,1 +1,1 @@
-web: node index.js -p $PORT
+web: node index.js -p $PORT --host 0.0.0.0 --disable-host-check
