@@ -227,6 +227,9 @@ global.reloadHandler()
 
 async function _quickTest() {
   let test = await Promise.all([
+    cp.spawn('ffmpeg'),
+    cp.spawn('ffprobe'),
+    cp.spawn('ffmpeg', ['-hide_banner', '-loglevel', 'error', '-filter_complex', 'color', '-frames:v', '1', '-f', 'webp', '-']),
     cp.spawn('convert'),
     cp.spawn('magick'),
     cp.spawn('gm'),
@@ -245,6 +248,9 @@ async function _quickTest() {
   let [ffmpeg, ffprobe, ffmpegWebp, convert, magick, gm] = test
   console.log(test)
   let s = global.support = {
+    ffmpeg,
+    ffprobe,
+    ffmpegWebp,
     convert,
     magick,
     gm
@@ -252,7 +258,8 @@ async function _quickTest() {
   require('./lib/sticker').support = s
   Object.freeze(global.support)
 
-  
+  if (!s.ffmpeg) conn.logger.warn('Para enviar video por favor instalar FFMPEG de forma GLOBAL.')
+  if (s.ffmpeg && !s.ffmpegWebp) conn.logger.warn('Es posible que las pegatinas no estén animadas sin libwebp en ffmpeg (--enable-ibwebp al compilar ffmpeg)')
   if (!s.convert && !s.magick && !s.gm) conn.logger.warn('Es posible que las pegatinas no funcionen sin imagemagick si libwebp en ffmpeg no está instalado (pkg install imagemagick)')
 }
 
